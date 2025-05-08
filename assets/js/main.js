@@ -1,8 +1,51 @@
-let tripData = [];
+let tripData = null;
 let currentDayIndex = 0;
+
+// 主題設置
+const themes = ['theme-original', 'theme-fresh', 'theme-nature', 'theme-vibrant'];
+
+function setTheme(themeName) {
+    document.body.className = themeName;
+    localStorage.setItem('selectedTheme', themeName);
+}
+
+function setRandomTheme() {
+    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+    setTheme(randomTheme);
+}
+
+// 主題選擇器
+function initializeThemeSwitcher() {
+    const themeSwitcher = document.getElementById('theme-switcher');
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeOptions = document.querySelectorAll('.theme-option');
+
+    // 切換主題選擇器的展開/收合
+    themeToggle.addEventListener('click', () => {
+        themeSwitcher.classList.toggle('collapsed');
+    });
+
+    // 選擇主題
+    themeOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            const themeName = option.getAttribute('data-theme');
+            setTheme(themeName);
+            themeSwitcher.classList.add('collapsed');
+        });
+    });
+
+    // 載入儲存的主題
+    const savedTheme = localStorage.getItem('selectedTheme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        setRandomTheme();
+    }
+}
 
 // 載入行程資料
 async function loadTripData() {
+    setRandomTheme();
     try {
         const response = await fetch('ztmy_trip.json');
         tripData = await response.json();
@@ -216,3 +259,4 @@ createBackToTopButton();
 
 // 載入行程資料
 loadTripData();
+initializeThemeSwitcher();
